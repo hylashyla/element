@@ -78,23 +78,28 @@
     components: { ElProgress },
 
     props: {
+      // 文件列表
       files: {
         type: Array,
         default() {
           return [];
         }
       },
+      // 是否禁用
       disabled: {
         type: Boolean,
         default: false
       },
+      // 预览函数
       handlePreview: Function,
+      // 文件列表类型
       listType: String
     },
     methods: {
       parsePercentage(val) {
         return parseInt(val, 10);
       },
+      // 点击预览图标
       handleClick(file) {
         this.handlePreview && this.handlePreview(file);
       }

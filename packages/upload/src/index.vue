@@ -109,8 +109,8 @@ export default {
   data() {
     return {
       uploadFiles: [],
-      dragOver: false,
-      draging: false,
+      dragOver: false, // 未使用
+      draging: false, // 未使用
       tempIndex: 1
     };
   },
@@ -123,6 +123,7 @@ export default {
 
   watch: {
     listType(type) {
+      // 图片
       if (type === 'picture-card' || type === 'picture') {
         this.uploadFiles = this.uploadFiles.map(file => {
           if (!file.url && file.raw) {
@@ -137,7 +138,7 @@ export default {
       }
     },
     fileList: {
-      immediate: true,
+      immediate: true, // 第一次绑定值时也触发
       handler(fileList) {
         this.uploadFiles = fileList.map(item => {
           item.uid = item.uid || (Date.now() + this.tempIndex++);
@@ -149,6 +150,7 @@ export default {
   },
 
   methods: {
+    // 开始上传文件
     handleStart(rawFile) {
       rawFile.uid = Date.now() + this.tempIndex++;
       let file = {
@@ -162,6 +164,7 @@ export default {
 
       if (this.listType === 'picture-card' || this.listType === 'picture') {
         try {
+          // 创建一个表示File对象的URL，参考：https://developer.mozilla.org/zh-CN/docs/Web/API/URL/createObjectURL
           file.url = URL.createObjectURL(rawFile);
         } catch (err) {
           console.error('[Element Error][Upload]', err);
@@ -172,12 +175,14 @@ export default {
       this.uploadFiles.push(file);
       this.onChange(file, this.uploadFiles);
     },
+    // 上传进度变化试触发
     handleProgress(ev, rawFile) {
       const file = this.getFile(rawFile);
       this.onProgress(ev, file, this.uploadFiles);
       file.status = 'uploading';
       file.percentage = ev.percent || 0;
     },
+    // 上传成功
     handleSuccess(res, rawFile) {
       const file = this.getFile(rawFile);
 
@@ -189,6 +194,7 @@ export default {
         this.onChange(file, this.uploadFiles);
       }
     },
+    // 上传错误
     handleError(err, rawFile) {
       const file = this.getFile(rawFile);
       const fileList = this.uploadFiles;
@@ -200,21 +206,27 @@ export default {
       this.onError(err, file, this.uploadFiles);
       this.onChange(file, this.uploadFiles);
     },
+    // 删除文件
     handleRemove(file, raw) {
       if (raw) {
         file = this.getFile(raw);
       }
       let doRemove = () => {
+        // 若该文件请求未完成，终止该文件请求
         this.abort(file);
         let fileList = this.uploadFiles;
+        // 文件列表中删除该条数据
         fileList.splice(fileList.indexOf(file), 1);
+        // 触发文件列表移除文件回调函数
         this.onRemove(file, fileList);
       };
 
+      // 若未提供beforeRemove函数，直接执行doRemove函数
       if (!this.beforeRemove) {
         doRemove();
       } else if (typeof this.beforeRemove === 'function') {
         const before = this.beforeRemove(file, this.uploadFiles);
+        // 如果beforeRemove函数执行后返回一个promise,等待promise状态变成resolve再执行doRemove函数
         if (before && before.then) {
           before.then(() => {
             doRemove();
@@ -224,6 +236,7 @@ export default {
         }
       }
     },
+    // 获取文件
     getFile(rawFile) {
       let fileList = this.uploadFiles;
       let target;
@@ -233,9 +246,11 @@ export default {
       });
       return target;
     },
+    // 停止请求
     abort(file) {
       this.$refs['upload-inner'].abort(file);
     },
+    // 清除文件列表
     clearFiles() {
       this.uploadFiles = [];
     },

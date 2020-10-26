@@ -56,22 +56,29 @@ export default {
   },
 
   methods: {
+    // 未使用
     isImage(str) {
       return str.indexOf('image') !== -1;
     },
+    // 文件上传回调
     handleChange(ev) {
       const files = ev.target.files;
 
       if (!files) return;
       this.uploadFiles(files);
     },
+    // 上传文件列表
     uploadFiles(files) {
+      // 判断是否超出文件个数限制
       if (this.limit && this.fileList.length + files.length > this.limit) {
+        // 触发文件超出个数限制时的钩子函数
         this.onExceed && this.onExceed(files, this.fileList);
         return;
       }
 
+      // 返回数组对象
       let postFiles = Array.prototype.slice.call(files);
+      // 不可多选文件时，获取第一个文件。按理说，不可多选文件时，postFiles不可能有多个，感觉这行多余？
       if (!this.multiple) { postFiles = postFiles.slice(0, 1); }
 
       if (postFiles.length === 0) { return; }
@@ -81,6 +88,7 @@ export default {
         if (this.autoUpload) this.upload(rawFile);
       });
     },
+    // 上传单个文件
     upload(rawFile) {
       this.$refs.input.value = null;
 
@@ -114,9 +122,11 @@ export default {
       } else if (before !== false) {
         this.post(rawFile);
       } else {
+        // beforeUpload钩子函数返回false时，触发onRemove钩子函数
         this.onRemove(null, rawFile);
       }
     },
+    // 终止请求，XMLHttpRequest.abort() 方法将终止该请求
     abort(file) {
       const { reqs } = this;
       if (file) {
@@ -132,6 +142,7 @@ export default {
         });
       }
     },
+    // 发送post请求
     post(rawFile) {
       const { uid } = rawFile;
       const options = {
@@ -159,14 +170,17 @@ export default {
         req.then(options.onSuccess, options.onError);
       }
     },
+    // 上传按钮点击事件
     handleClick() {
       if (!this.disabled) {
         this.$refs.input.value = null;
         this.$refs.input.click();
       }
     },
+    // 上传按钮键盘事件
     handleKeydown(e) {
       if (e.target !== e.currentTarget) return;
+      // 回车和空格触发点击上传按钮
       if (e.keyCode === 13 || e.keyCode === 32) {
         this.handleClick();
       }
