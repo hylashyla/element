@@ -38,16 +38,20 @@
     },
 
     computed: {
+      // elFormItem的尺寸
       _elFormItemSize() {
         return (this.elFormItem || {}).elFormItemSize;
       },
+      // 尺寸 medium / small / mini
       radioGroupSize() {
         return this.size || this._elFormItemSize || (this.$ELEMENT || {}).size;
       }
     },
 
     created() {
+      // 绑定handleChange事件
       this.$on('handleChange', value => {
+        // 触发change事件
         this.$emit('change', value);
       });
     },
@@ -99,6 +103,7 @@
     },
     watch: {
       value(value) {
+        // 绑定值改变时触发表单验证
         this.dispatch('ElFormItem', 'el.form.change', [this.value]);
       }
     }

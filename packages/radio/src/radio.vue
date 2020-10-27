@@ -77,6 +77,7 @@
       };
     },
     computed: {
+      // 是否被ElRadioGroup组件包裹
       isGroup() {
         let parent = this.$parent;
         while (parent) {
@@ -91,31 +92,39 @@
       },
       model: {
         get() {
+          // isGroup时获取radioGroup的value值，否则获取radio的value值
           return this.isGroup ? this._radioGroup.value : this.value;
         },
         set(val) {
           if (this.isGroup) {
+            // 触发RadioGroup的input事件
             this.dispatch('ElRadioGroup', 'input', [val]);
           } else {
+            // 触发radio的input事件
             this.$emit('input', val);
           }
+          // 值匹配上时设置input的checked为true
           this.$refs.radio && (this.$refs.radio.checked = this.model === this.label);
         }
       },
+      // elFormItem的尺寸
       _elFormItemSize() {
         return (this.elFormItem || {}).elFormItemSize;
       },
+      // radio的尺寸
       radioSize() {
         const temRadioSize = this.size || this._elFormItemSize || (this.$ELEMENT || {}).size;
         return this.isGroup
           ? this._radioGroup.radioGroupSize || temRadioSize
           : temRadioSize;
       },
+      // 是否不可用
       isDisabled() {
         return this.isGroup
           ? this._radioGroup.disabled || this.disabled || (this.elForm || {}).disabled
           : this.disabled || (this.elForm || {}).disabled;
       },
+      // <label>标签的tabIndex属性用于键盘中的TAB键在控件中的移动顺序，当设置负值时，tab会直接跳过
       tabIndex() {
         return (this.isDisabled || (this.isGroup && this.model !== this.label)) ? -1 : 0;
       }
@@ -123,6 +132,7 @@
 
     methods: {
       handleChange() {
+        // 为什么使用$nextTick
         this.$nextTick(() => {
           this.$emit('change', this.model);
           this.isGroup && this.dispatch('ElRadioGroup', 'handleChange', this.model);
