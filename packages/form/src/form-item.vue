@@ -186,6 +186,7 @@
       };
     },
     methods: {
+      // 验证表单项
       validate(trigger, callback = noop) {
         this.validateDisabled = false;
         const rules = this.getFilteredRule(trigger);
@@ -217,18 +218,22 @@
           this.elForm && this.elForm.$emit('validate', this.prop, !errors, this.validateMessage || null);
         });
       },
+      // 清除校验相关信息
       clearValidate() {
         this.validateState = '';
         this.validateMessage = '';
         this.validateDisabled = false;
       },
+      // 重置字段
       resetField() {
+        // 验证置空
         this.validateState = '';
         this.validateMessage = '';
 
         let model = this.form.model;
         let value = this.fieldValue;
         let path = this.prop;
+        // 原来prop除了用.也可以用:分割
         if (path.indexOf(':') !== -1) {
           path = path.replace(/:/, '.');
         }
@@ -236,6 +241,7 @@
         let prop = getPropByPath(model, path, true);
 
         this.validateDisabled = true;
+        // 将model中对应字段的值重置为初始值
         if (Array.isArray(value)) {
           prop.o[prop.k] = [].concat(this.initialValue);
         } else {
@@ -249,6 +255,7 @@
 
         this.broadcast('ElTimeSelect', 'fieldReset', this.initialValue);
       },
+      // 获取rules
       getRules() {
         let formRules = this.form.rules;
         const selfRules = this.rules;
@@ -259,6 +266,7 @@
 
         return [].concat(selfRules || formRules || []).concat(requiredRule);
       },
+      // 根据trigger获取过滤后的rules
       getFilteredRule(trigger) {
         const rules = this.getRules();
 
@@ -271,9 +279,11 @@
           }
         }).map(rule => objectAssign({}, rule));
       },
+      // el.form.blur事件的处理函数
       onFieldBlur() {
         this.validate('blur');
       },
+      // el.form.change事件的处理函数
       onFieldChange() {
         if (this.validateDisabled) {
           this.validateDisabled = false;
@@ -285,14 +295,18 @@
       updateComputedLabelWidth(width) {
         this.computedLabelWidth = width ? `${width}px` : '';
       },
+      // 绑定验证相关事件
       addValidateEvents() {
         const rules = this.getRules();
 
         if (rules.length || this.required !== undefined) {
+          // 在输入控件blur时可触发此事件,以便触发验证
           this.$on('el.form.blur', this.onFieldBlur);
+          // 在输入控件change时可触发此事件,以便触发验证
           this.$on('el.form.change', this.onFieldChange);
         }
       },
+      // 移除事件
       removeValidateEvents() {
         this.$off();
       }

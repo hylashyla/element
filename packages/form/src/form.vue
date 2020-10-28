@@ -51,16 +51,20 @@
       rules() {
         // remove then add event listeners on form-item after form rules change
         this.fields.forEach(field => {
+          // 移除formitem组件上绑定的事件
           field.removeValidateEvents();
+          // formitem绑定验证事件
           field.addValidateEvents();
         });
 
         if (this.validateOnRuleChange) {
+          // rules改变时，触发表单验证
           this.validate(() => {});
         }
       }
     },
     computed: {
+      // 获取所有label自动宽度的最大值
       autoLabelWidth() {
         if (!this.potentialLabelWidthArr.length) return 0;
         const max = Math.max(...this.potentialLabelWidthArr);
@@ -69,11 +73,14 @@
     },
     data() {
       return {
+        // 保存formitem的数组
         fields: [],
         potentialLabelWidthArr: [] // use this array to calculate auto width
       };
     },
     created() {
+      // 绑定添加表单项事件
+      // field是formitem组件的实例
       this.$on('el.form.addField', (field) => {
         if (field) {
           this.fields.push(field);
@@ -87,8 +94,9 @@
       });
     },
     methods: {
+      // 重置表单项
       resetFields() {
-        if (!this.model) {
+        if (!this.model) { // model的校验
           console.warn('[Element Warn][Form]model is required for resetFields to work.');
           return;
         }
@@ -96,6 +104,7 @@
           field.resetField();
         });
       },
+      // 清除校验
       clearValidate(props = []) {
         const fields = props.length
           ? (typeof props === 'string'
@@ -106,6 +115,7 @@
           field.clearValidate();
         });
       },
+      // 校验所有表单项
       validate(callback) {
         if (!this.model) {
           console.warn('[Element Warn][Form]model is required for validate to work!');
@@ -145,6 +155,7 @@
           return promise;
         }
       },
+      // 校验某个字段
       validateField(props, cb) {
         props = [].concat(props);
         const fields = this.fields.filter(field => props.indexOf(field.prop) !== -1);
