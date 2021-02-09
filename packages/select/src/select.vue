@@ -41,7 +41,7 @@
           <span class="el-select__tags-text">{{ item.currentLabel }}</span>
         </el-tag>
       </transition-group>
-
+      <!-- 可筛选时，输入筛选关键词的input框 -->
       <input
         type="text"
         class="el-select__input"
@@ -67,6 +67,7 @@
         :style="{ 'flex-grow': '1', width: inputLength / (inputWidth - 32) + '%', 'max-width': inputWidth - 42 + 'px' }"
         ref="input">
     </div>
+    <!-- input框 只读，点击展开选项，显示单选的选中值  -->
     <el-input
       ref="reference"
       v-model="selectedLabel"

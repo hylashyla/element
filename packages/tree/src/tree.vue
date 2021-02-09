@@ -177,6 +177,7 @@
     },
 
     methods: {
+      // 节点过滤时，可调用此方法
       filter(value) {
         if (!this.filterNodeMethod) throw new Error('[Tree] filterNodeMethod is required when filter');
         this.store.filter(value);
@@ -186,6 +187,7 @@
         return getNodeKey(this.nodeKey, node.data);
       },
 
+      // 获取向上节点路径
       getNodePath(data) {
         if (!this.nodeKey) throw new Error('[Tree] nodeKey is required in getNodePath');
         const node = this.store.getNode(data);

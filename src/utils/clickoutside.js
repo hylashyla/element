@@ -4,6 +4,7 @@ import { on } from 'element-ui/src/utils/dom';
 const nodeList = [];
 const ctx = '@@clickoutsideContext';
 
+// 缓存mousedown元素
 let startClick;
 let seed = 0;
 
